@@ -37,7 +37,9 @@ The goal is to demonstrate how the attention mechanism overcomes the information
 | After Filtering & Sampling | 10,000 |
 | Input (Encoder) | Review Text — 8 to 80 words |
 | Target (Decoder) | Review Summary — 2 to 10 words |
-| Train / Test Split | 80% / 20% |
+| Train / Test Split | 80% / 20% (8000 train, 2000 test) |
+| Encoder Vocabulary Size | 8,000 |
+| Decoder Vocabulary Size | 4,745 |
 
 ---
 
@@ -52,16 +54,17 @@ The goal is to demonstrate how the attention mechanism overcomes the information
 | Vocabulary Size | 8,000 |
 | Batch Size | 128 |
 | Max Epochs | 50 |
-| Optimizer | Adam |
+| Optimizer | Adam (lr=0.001) |
 | Loss Function | Sparse Categorical Cross-Entropy |
 | Early Stopping Patience | 5 epochs on val_loss |
-| Framework | TensorFlow 2.x / Keras (Google Colab) |
+| Framework | TensorFlow 2.19.0 / Keras (Google Colab) |
 
 ---
 
 ## 🏗️ Model Architectures
 
 ### Model A — Without Attention
+Total Parameters: **3,639,305 (13.88 MB)**
 
 The entire input sequence is compressed into a **single fixed-size vector** (final LSTM hidden state). The decoder only sees this one vector — information bottleneck problem.
 
@@ -72,6 +75,7 @@ Input → Embedding → LSTM Encoder → (h, c) final state only
 ```
 
 ### Model B — With Bahdanau Attention
+Total Parameters: **4,033,290 (15.39 MB)**
 
 The encoder returns **all hidden states**. At each decoder step, the attention layer computes a dynamic context vector by attending over all encoder states.
 
@@ -96,11 +100,9 @@ context_t = Σ αᵢ · hᵢ        ← dynamic weighted context vector
 ## 🚀 How to Run
 
 ### Step 1 — Open Notebook in Google Colab
-
 Upload or open `encoder_decoder_001.ipynb` in [Google Colab](https://colab.research.google.com/).
 
 ### Step 2 — Add Your Kaggle Credentials
-
 In **Cell 2**, replace the credentials with your own Kaggle API key:
 
 ```python
@@ -135,18 +137,16 @@ kaggle_creds = {
 
 | Metric | Without Attention | With Attention |
 |---|---|---|
-| Final Training Loss | — | — |
-| Best Validation Loss | — | — |
-| Best Validation Accuracy | — | — |
-| BLEU Score | — | — |
-| Training Time (seconds) | — | — |
-| Total Epochs Run | — | — |
+| Final Training Loss | 1.4849 | 1.5382 |
+| Best Validation Loss | 2.0931 | **2.0789 ✓** |
+| Best Validation Accuracy | **0.7146 ✓** | 0.7127 |
+| BLEU Score | 0.0040 | 0.0040 |
+| Training Time (seconds) | 121.2s | 121.2s |
+| Total Epochs Run | 32 | 29 |
 | Context Vector | Fixed (bottleneck) | Dynamic (per step) |
 | Long Sequence Handling | Poor | Good |
 | Interpretability | None | High (heatmap) |
 | Output Coherence | Lower | Higher |
-
-> ℹ️ Fill in the numeric values from the Cell 12 output after running the notebook.
 
 ---
 
